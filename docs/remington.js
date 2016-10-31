@@ -1,3 +1,4 @@
+var Remington =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -44,39 +45,56 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * The Remington module
-	 * @module remington
-	 */
-	const keycodes = __webpack_require__(1);
-
-	/**
-	 * Registers an input listener on an elements and binds the output to a buffer string
-	 * @param {Element} element - The element that will be emitting keyboard events
-	 * @param {String} [buffer] - Output will be written to this string, if given
-	 */
-	exports.register = function(element, buffer) {
-	    element.addEventListener('keypress', function(event) {
-	        const character = String.fromCharCode(event.charCode);
-	        buffer += character;
-	    });
-	    element.addEventListener('keydown', function(event) {
-	        switch(event.keyCode) {
-	            case keycodes.ENTER:
-	                buffer += '\n'
-	                break;
-	            case keycodes.BACKSPACE:
-	                buffer = buffer.substring(0, buffer.length - 1);
-	                break;
-	            default:
-	                break;
-	        }
-	    });
-	};
+	var Remington = module.exports = __webpack_require__(1);
 
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * The Remington module
+	 * @module remington
+	 */
+	const keycodes = __webpack_require__(2);
+
+	/**
+	 * The Remington constructor
+	 * @constructor
+	 * @param {Element} element - the DOM element to which to attach this Remington instance
+	 */
+	const Remington = function(element) {
+	    const self = this;
+	    
+	    self.buffer = "";
+	    self.cursor = {
+	        row: 0,
+	        column: 0
+	    };
+	    
+	    element.addEventListener('keypress', function(event) {
+	        const character = String.fromCharCode(event.charCode);
+	        self.buffer += character;
+	    });
+	    element.addEventListener('keydown', function(event) {
+	        switch(event.keyCode) {
+	        case keycodes.ENTER:
+	            self.buffer += '\n'
+	            break;
+	        case keycodes.BACKSPACE:
+	            self.buffer = self.buffer.substring(0, self.buffer.length - 1);
+	            break;
+	        default:
+	            break;
+	        }
+	    });
+	}
+
+	module.exports = Remington;
+
+
+/***/ },
+/* 2 */
 /***/ function(module, exports) {
 
 	/**
