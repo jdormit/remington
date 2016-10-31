@@ -4,6 +4,10 @@
   "description": "A keyboard input library",
   "main": "index.js",
   "scripts": {
+    "prepush": "rm docs/* && npm run build && npm run build:min && npm run build:commit",
+    "build": "webpack index.js docs/remington.js",
+    "build:min": "webpack -p index.js docs/remington.min.js",
+    "build:commit": "git add docs/* && git commit docs/* -m \"Automated build commit\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,6 +21,7 @@
   "author": "Jeremy Dormitzer",
   "license": "MIT",
   "devDependencies": {
+    "husky": "^0.11.9",
     "webpack": "^1.13.3"
   }
 }
