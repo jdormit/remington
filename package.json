@@ -1,0 +1,19 @@
+{
+  "name": "remington",
+  "version": "0.0.0",
+  "description": "A keyboard input library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "keydown",
+    "keyup",
+    "keypress",
+    "input",
+    "keyboard",
+    "typing"
+  ],
+  "author": "Jeremy Dormitzer",
+  "license": "MIT"
+}
