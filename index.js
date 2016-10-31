@@ -2,7 +2,7 @@
  * The Remington module
  * @module remington
  */
-const keycodes = require('./keycodes');
+const keycodes = require('./lib/keycodes');
 
 /**
  * Registers an input listener on an elements and binds the output to a buffer string
