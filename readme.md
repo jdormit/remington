@@ -4,6 +4,11 @@
 `Remington` provides a wrapper around the [`KeyboardEvent`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) API. It allows developers to model keyboard input as a series of serializable, discrete changes, rather than resorting to messy hacks involving `input` elements or the `contenteditable` attribute. `Remington` can write changes directly to a `String`; this is extremely useful when combined with view-data-binding libraries such as [React](http://reactjs.org/) or [Vue](http://vuejs.org/).
 
 ## Installation
+Download [`remington.js`](https://jdormit.github.io/jdormit/remington.js) or (minified) [`remington.min.js`](https://jdormit.github.io/remington/remington.min.js).
+
+`Remington` is also available on NPM:
+
+`npm install remington`
 
 ## Usage
 ```javascript
