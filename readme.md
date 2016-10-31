@@ -11,7 +11,7 @@ const myInputElement = document.getElementById('myinput');
 const buffer = "";
 
 // Update buffer whenever myInputElement fires a KeyboardEvent
-const writer = Remington.register(myInputElement, buffer, keystrokes);
+const writer = Remington.register(myInputElement, buffer);
 ```
 ## License
 `Remington` is provided under the MIT license. See [`license.md`](./license.md) for details.
