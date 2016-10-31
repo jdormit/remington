@@ -8,7 +8,7 @@
     "postpush": "git push --no-verify",
     "build": "webpack index.js docs/remington.js",
     "build:min": "webpack -p index.js docs/remington.min.js",
-    "build:commit": "git add docs/* && git commit docs/* -m \"Automated build commit\"",
+    "build:commit": "git add docs/* && git diff --exit-code > /dev/null && if [ $? -eq 1 ]; then git commit docs/* -m \"Automated build commit\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,6 +17,8 @@
     "keypress",
     "input",
     "keyboard",
+    "text",
+    "string",
     "typing"
   ],
   "author": "Jeremy Dormitzer",
