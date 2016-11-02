@@ -4,8 +4,7 @@
   "description": "A keyboard input library",
   "main": "index.js",
   "scripts": {
-    "prepush": "rm docs/* && npm run build && npm run build:min && npm run build:commit",
-    "postpush": "git push --no-verify",
+    "prepush": "rm docs/* && npm run build && npm run build:min && npm run build:commit && git push --no-verify",
     "build": "webpack index.js --output-library-target var --output-library Remington docs/remington.js",
     "build:min": "webpack -p index.js --output-library-target var --output-library Remington docs/remington.min.js",
     "build:commit": "git add docs/* && git commit docs/* -m \"Automated build commit\" || :",
