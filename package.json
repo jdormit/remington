@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "prepush": "rm docs/* && npm run build && npm run build:min && npm run build:commit && git push --no-verify",
-    "build": "webpack index.js --output-library-target var --output-library Remington docs/remington.js",
-    "build:min": "webpack -p index.js --output-library-target var --output-library Remington docs/remington.min.js",
+    "build": "webpack",
+    "build:min": "webpack --config webpack.min.config.js",
     "build:commit": "git add docs/* && git commit docs/* -m \"Automated build commit\" || :",
     "build:watch": "(npm run build -- --watch & npm run build:min -- --watch)",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,5 +27,10 @@
     "husky": "^0.11.9",
     "jsdoc": "^3.4.2",
     "webpack": "^1.13.3"
+  },
+  "dependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.7",
+    "babel-preset-es2015": "^6.18.0"
   }
 }
