@@ -8,6 +8,7 @@
     "build": "webpack index.js --output-library-target var --output-library Remington docs/remington.js",
     "build:min": "webpack -p index.js --output-library-target var --output-library Remington docs/remington.min.js",
     "build:commit": "git add docs/* && git commit docs/* -m \"Automated build commit\" || :",
+    "build:watch": "(npm run build -- --watch & npm run build:min -- --watch)",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
