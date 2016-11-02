@@ -64,8 +64,9 @@ var Remington =
 	 * The Remington constructor
 	 * @constructor
 	 * @param {Element} element - The DOM element to which to attach this Remington instance
+	 * @param {Function} [inputCallback] - A callback that fires whenever the Remington instance detects input. Takes a single parameter, the event that was fired
 	 */
-	const Remington = function(element) {
+	const Remington = function(element, inputCallback) {
 	    const self = this;
 
 	    /**
@@ -116,6 +117,7 @@ var Remington =
 
 	    /**
 	     * Generates a new string by removing existing characters and/or adding new characters
+	     * @private
 	     * @param {Number} start - The index at which to start changing the string
 	     * @param {Number} [deleteCount] - The number of old characters to remove. If 0, no characters are removed. If omitted, equal to (string.length - start).
 	     * @params {...String} [items] - Characters or strings to add to the string
@@ -145,6 +147,9 @@ var Remington =
 	        rows[self.cursor.row] = rows[self.cursor.row].splice(self.cursor.col, 0, character);
 	        currentIndex++;
 	        self.cursor.col++;
+	        if (inputCallback && typeof inputCallback === 'function') {
+	            inputCallback(event);
+	        }
 	    });
 
 	    /**
@@ -189,6 +194,9 @@ var Remington =
 	            default: {
 	                break;
 	            }
+	        }
+	        if (inputCallback && typeof inputCallback === 'function') {
+	            inputCallback(event);
 	        }
 	    });
 	}
