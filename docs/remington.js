@@ -67,54 +67,82 @@ var Remington =
 	 * The Remington constructor
 	 * @constructor
 	 * @param {Element} element - The DOM element to which to attach this Remington instance
+	 * @param {String} [initialText = ""] - Text to put in the buffer initially
 	 * @param {Function} [inputCallback] - A callback that fires whenever the Remington instance detects input. Takes a single parameter, the event that was fired
 	 */
-	var Remington = function Remington(element, inputCallback) {
+	var Remington = function Remington(element) {
+	    var initialText = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+	    var inputCallback = arguments[2];
+
+	    if (typeof initialText === 'function') {
+	        inputCallback = initialText;
+	        initialText = "";
+	    }
 	    var self = this;
 
 	    /**
 	     * The buffer of the Remington instance
-	     * @type {Object}
-	     * @property {String} text - A string representation of the buffer
+	     * @private
+	     * @typedef {Object} Buffer
 	     * @property {String[]} rows - The buffer represented as an array of rows
 	     */
-	    self.buffer = {
-	        text: "",
+	    var buffer = {
 	        rows: []
 	    };
 
 	    /**
+	     * Gets the buffer of the Remington instance as an array of rows
+	     * @returns {Buffer} The buffer
+	     */
+	    self.getBuffer = function () {
+	        return buffer.rows;
+	    };
+
+	    /**
+	     * Gets the buffer of the Remington instance as a string.
+	     * Unless a string is value is truly needed, prefer getBuffer(),
+	     * as this is an expensive (O(n)) operation.
+	     * @returns {String} The buffer as a string
+	     */
+	    self.getBufferText = function () {
+	        var text = "";
+	        for (var i in buffer.rows) {
+	            text += buffer.rows[i];
+	        }
+	        return text;
+	    };
+
+	    /**
+	     * Sets the buffer text
+	     * @param {String} text - The text to set the buffer to
+	     */
+	    self.setBufferText = function (text) {
+	        var rows = text.split(constants.NEWLINE);
+	        for (var i = 0; i < rows.length - 1; i++) {
+	            rows[i] += constants.NEWLINE;
+	        }
+	        buffer.rows = rows;
+	    };
+
+	    /**
 	     * The current cursor location, where text will be inputted into the buffer
+	     * @private
 	     * @type {Object}
 	     * @property {Number} row - The current row
 	     * @property {Number} col - The current column
 	     */
-	    self.cursor = {
+	    var cursor = {
 	        row: 0,
 	        col: 0
 	    };
 
-	    /** 
-	     * The current index into the buffer
-	     * @private
-	     */
-	    var currentIndex = 0;
+	    self.getCursor = function () {
+	        return cursor;
+	    };
 
-	    /**
-	     * Calculate the current index into the buffer based on cursor location
-	     * @private
-	     */
-	    var calculateCurrentIndex = function calculateCurrentIndex() {
-	        var index = 0;
-	        var newlinesVisited = 0;
-	        // first, find the beginning of the current row
-	        while (newlinesVisited < self.cursor.row) {
-	            index = self.buffer.text.indexOf(constants.NEWLINE, index);
-	            newlinesVisited++;
-	        }
-	        // then, move the index to the current column
-	        index += self.cursor.col;
-	        currentIndex = index;
+	    self.setCursor = function (col, row) {
+	        cursor.col = col;
+	        cursor.row = row;
 	    };
 
 	    /**
@@ -150,13 +178,11 @@ var Remington =
 	            return;
 	        }
 	        var character = String.fromCharCode(event.charCode);
-	        self.buffer.text = self.buffer.text.splice(currentIndex, 0, character);
-	        if (!self.buffer.rows[self.cursor.row]) {
-	            self.buffer.rows[self.cursor.row] = "";
+	        if (!buffer.rows[cursor.row]) {
+	            buffer.rows[cursor.row] = "";
 	        }
-	        self.buffer.rows[self.cursor.row] = self.buffer.rows[self.cursor.row].splice(self.cursor.col, 0, character);
-	        currentIndex++;
-	        self.cursor.col++;
+	        buffer.rows[cursor.row] = buffer.rows[cursor.row].splice(cursor.col, 0, character);
+	        cursor.col++;
 	        if (inputCallback && typeof inputCallback === 'function') {
 	            inputCallback(event);
 	        }
@@ -170,38 +196,31 @@ var Remington =
 	        switch (event.keyCode) {
 	            case keycodes.ENTER:
 	                {
-	                    self.buffer.text = self.buffer.text.splice(currentIndex, 0, constants.NEWLINE);
-	                    currentIndex++;
-	                    if (!self.buffer.rows[self.cursor.row]) {
-	                        self.buffer.rows[self.cursor.row] = "";
+	                    if (!buffer.rows[cursor.row]) {
+	                        buffer.rows[cursor.row] = "";
 	                    }
-	                    var remainingRow = self.buffer.rows[self.cursor.row].slice(currentIndex, self.buffer.rows[self.cursor.row].length);
-	                    self.buffer.rows[self.cursor.row] = self.buffer.rows[self.cursor.row].splice(currentIndex, constants.NEWLINE);
-	                    self.buffer.rows.splice(self.cursor.row + 1, 0, remainingRow);
-	                    self.cursor.row++;
-	                    self.cursor.col = 0;
+	                    var remainingRow = buffer.rows[cursor.row].slice(cursor.col, buffer.rows[cursor.row].length);
+	                    buffer.rows[cursor.row] = buffer.rows[cursor.row].splice(cursor.col, constants.NEWLINE);
+	                    buffer.rows.splice(cursor.row + 1, 0, remainingRow);
+	                    cursor.row++;
+	                    cursor.col = 0;
 	                    break;
 	                }
 	            case keycodes.BACKSPACE:
 	                {
-	                    // BACKSPACE deletes the character before the currentIndex, unless currentIndex is 0
-	                    if (currentIndex > 0) {
-	                        self.buffer.text = self.buffer.text.splice(currentIndex - 1, 1);
-	                        currentIndex--;
-	                    }
 	                    // if the cursor is at the beginning of a row, go the end of the previous row
-	                    if (self.cursor.col === 0 && self.cursor.row > 0) {
+	                    if (cursor.col === 0 && cursor.row > 0) {
 	                        // concatenate the current row with the previous one
 	                        // and delete the newline at the end of the previous one
-	                        self.buffer.rows[self.cursor.row - 1] = self.buffer.rows[self.cursor.row - 1].splice(self.buffer.rows[self.cursor.row - 1].length - 1, 1, self.buffer.rows[self.cursor.row]);
-	                        self.buffer.rows.splice(self.cursor.row, 1);
-	                        self.cursor.row--;
-	                        self.cursor.col = self.buffer.rows[self.cursor.row].length;
+	                        buffer.rows[cursor.row - 1] = buffer.rows[cursor.row - 1].splice(buffer.rows[cursor.row - 1].length - 1, 1, buffer.rows[cursor.row]);
+	                        buffer.rows.splice(cursor.row, 1);
+	                        cursor.row--;
+	                        cursor.col = buffer.rows[cursor.row].length;
 	                    }
 	                    // otherwise move the cursor back 1 column, unless it is at (0,0)
-	                    else if (!(self.cursor.col === 0 && self.cursor.row == 0)) {
-	                            self.buffer.rows[self.cursor.row] = self.buffer.rows[self.cursor.row].splice(self.cursor.col - 1, 1);
-	                            self.cursor.col--;
+	                    else if (!(cursor.col === 0 && cursor.row == 0)) {
+	                            buffer.rows[cursor.row] = buffer.rows[cursor.row].splice(cursor.col - 1, 1);
+	                            cursor.col--;
 	                        }
 	                    break;
 	                }
@@ -215,6 +234,10 @@ var Remington =
 	            inputCallback(event);
 	        }
 	    });
+
+	    if (initialText !== "") {
+	        self.setBufferText(initialText);
+	    }
 	};
 
 	module.exports = Remington;
