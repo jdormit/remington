@@ -1,6 +1,6 @@
 {
   "name": "remington",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A keyboard input library",
   "main": "index.js",
   "scripts": {
