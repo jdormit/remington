@@ -23,7 +23,7 @@ var writer = new Remington(myElement);
 });
 ```
 ## The Remington Instance
-### `Remington(element)`
+### `Remington(element, initialText, inputCallback)`
 The Remington constructor. This is the default export of the Remington package.
 
 ```javascript
@@ -32,30 +32,126 @@ var writer = new Remington(myElement);
 
 #### Arguments
 `element {Element}`: The DOM element to which to attach this Remington instance.
+`initialText {String}`: Optional. This text will start in the Remington instance's buffer.
+`inputCallback {Function}`: Optional. The function is called whenever the Remington instance detects input. It is called once per character inputted.
 
 #### Returns
 A new `Remington` instance.
 
-### Properties
-#### `writer.buffer`
-This `String` stores the current value of this instance's text buffer.
+### Methods
+#### `writer.getBuffer()`
+Returns this Remington instance's buffer. The buffer is stored as an array of strings, where each string is a row of text.
 
-#### `writer.cursor`
-This `Object` represents this instance's cursor.
+#### `writer.getBufferText()`
+Returns a string representation of the instance's buffer. This is computationally expensive, so `writer.getBuffer()` is preferred unless a string representation is absolutely necessary.
+
+#### `writer.setBufferText(text)`
+Sets this instance's buffer text to `text`. The text is broken into rows based on newlines.
+
+##### Arguments
+`text {String}`: The text to set the buffer to.
+
+#### `writer.getCursor()`
+This returns the `Object` representing this instance's cursor.
 ```javascript
-writer.cursor = {
+cursor = {
     row: Number,
     col: Number
 }
 ```
-
-### Methods
-#### `writer.moveCursor(row, col)`
-Moves the cursor to the given position.
+#### `writer.setCursor(col, row)`
+This sets the cursor position to (`col`, `row`).
 
 ##### Arguments
-`row {Number}`: The row to which to move the cursor.
-`col {Number}`: The column to which to move the cursor.
+`col`: The cursor's new column position.
+`row`: The cursor's new row position.
+
+## Example Usage
+This is a *very hacky* example of usage, shown only to introduce the library. For production use, a view-layer framework like React or Vue is recommended for rendering the buffer and cursor.
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="remington.js"></script>
+        <style>
+         #editorDiv {
+             width: 500px;
+             height: 750px;
+             border: 1px solid black;
+             white-space: pre;
+         }
+         #cursor {
+             position: absolute;
+             border-left: 1px solid black;
+             background: transparent;
+             width: 1em;
+         }
+         #sizeCalculator {
+             white-space: pre;
+             position: absolute;
+             opacity: 0;
+         }
+        </style>
+    </head>
+    <body>
+        <span id="sizeCalculator"></span>
+        <div id="editorDiv" tabindex="1"></div>
+        <script type="text/javascript">
+         var editorDiv = document.getElementById('editorDiv');
+         var writer = new Remington(editorDiv, function(inputEvent) {
+             // Render the buffer
+             editorDiv.innerHTML = "";
+             for (i in writer.getBuffer()) {
+                 var row = writer.getBuffer()[i];
+                 var rowDiv = document.createElement('div'); 
+                 rowDiv.id = i;
+                 var rowText = document.createTextNode(row);
+                 rowDiv.appendChild(rowText);
+                 editorDiv.appendChild(rowDiv);
+             }
+             // Render the cursor
+             var lineHeight = lineHeight || document.getElementById(0).offsetHeight;
+             var cursorDiv = document.createElement('div');
+             cursorDiv.id = "cursor";
+             cursorDiv.style.height = lineHeight - 2 + "px";
+             // Calculate the height offset
+             var sizeCalculator = document.getElementById("sizeCalculator");
+             var textToCursor = "";
+             for (var i = 0; i < writer.getCursor().row; i++) {
+                 var rowText = document.getElementById(i).innerText;
+                 textToCursor += rowText;
+             }
+             sizeCalculator.innerText = textToCursor;
+             cursorDiv.style.top = sizeCalculator.offsetHeight + 9 + "px";
+             // Calculate the width offset
+             textToCursor = "";
+             for (var i = 0; i < writer.getCursor().col; i++) {
+                 var char = document.getElementById(writer.getCursor().row).innerText[i];
+                 textToCursor += char;
+             }
+             sizeCalculator.innerText = textToCursor;
+             var leftPos = sizeCalculator.offsetWidth + 9;
+             cursorDiv.style.left = leftPos + "px";
+             editorDiv.appendChild(cursorDiv);
+         });
+         // Hacky blinking cursor
+         var visible = true;
+         setInterval(function() {
+             var cursorDiv = document.getElementById('cursor');
+             if (!cursorDiv) return;
+             if (visible) {
+                 visible = false;
+                 cursorDiv.style.opacity = 0;
+             } else {
+                 visible = true;
+                 cursorDiv.style.opacity = 100;
+             }
+         }, 500);
+        </script>
+    </body>
+</html>
+```
 
 ## License
 `Remington` is provided under the MIT license. See [`license.md`](./license.md) for details.
