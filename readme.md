@@ -32,7 +32,9 @@ var writer = new Remington(myElement);
 
 #### Arguments
 `element {Element}`: The DOM element to which to attach this Remington instance.
+
 `initialText {String}`: Optional. This text will start in the Remington instance's buffer.
+
 `inputCallback {Function}`: Optional. The function is called whenever the Remington instance detects input. It is called once per character inputted.
 
 #### Returns
@@ -64,6 +66,7 @@ This sets the cursor position to (`col`, `row`).
 
 ##### Arguments
 `col`: The cursor's new column position.
+
 `row`: The cursor's new row position.
 
 ## Example Usage
