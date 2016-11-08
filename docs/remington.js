@@ -67,7 +67,7 @@ var Remington =
 	 * The Remington constructor
 	 * @constructor
 	 * @param {Element} element - The DOM element to which to attach this Remington instance
-	 * @param {String} [initialText = ""] - Text to put in the buffer initially
+	 * @param {String|String[]} [initialText = ""] - Text to put in the buffer initially, as a string or an array of lines of text
 	 * @param {Function} [inputCallback] - A callback that fires whenever the Remington instance detects input. Takes a single parameter, the event that was fired
 	 */
 	var Remington = function Remington(element) {
@@ -114,10 +114,10 @@ var Remington =
 
 	    /**
 	     * Sets the buffer text
-	     * @param {String} text - The text to set the buffer to
+	     * @param {String|String[]} text - The text to set the buffer to, as either a string or an array of lines of text
 	     */
 	    self.setBufferText = function (text) {
-	        var rows = text.split(constants.NEWLINE);
+	        var rows = Array.isArray(text) ? text : text.split(constants.NEWLINE);
 	        for (var i = 0; i < rows.length - 1; i++) {
 	            rows[i] += constants.NEWLINE;
 	        }
