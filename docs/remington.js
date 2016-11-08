@@ -117,11 +117,15 @@ var Remington =
 	     * @param {String|String[]} text - The text to set the buffer to, as either a string or an array of lines of text
 	     */
 	    self.setBufferText = function (text) {
-	        var rows = Array.isArray(text) ? text : text.split(constants.NEWLINE);
-	        for (var i = 0; i < rows.length - 1; i++) {
-	            rows[i] += constants.NEWLINE;
+	        if (Array.isArray(text)) {
+	            buffer.rows = text;
+	        } else {
+	            var rows = text.split(constants.NEWLINE);
+	            for (var i = 0; i < rows.length - 1; i++) {
+	                rows[i] += constants.NEWLINE;
+	            }
+	            buffer.rows = rows;
 	        }
-	        buffer.rows = rows;
 	    };
 
 	    /**
