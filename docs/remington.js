@@ -196,6 +196,8 @@ var Remington =
 	     * The keydown event listener handles non-character keys such as ENTER
 	     */
 	    element.addEventListener('keydown', function (event) {
+	        event.preventDefault();
+	        event.stopPropagation();
 	        var validKey = true;
 	        switch (event.keyCode) {
 	            case keycodes.ENTER:
