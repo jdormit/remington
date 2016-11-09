@@ -196,10 +196,17 @@ var Remington =
 	     * The keydown event listener handles non-character keys such as ENTER
 	     */
 	    element.addEventListener('keydown', function (event) {
-	        event.preventDefault();
-	        event.stopPropagation();
 	        var validKey = true;
 	        switch (event.keyCode) {
+	            case keycodes.SPACE:
+	                {
+	                    if (!buffer.rows[cursor.row]) {
+	                        buffer.rows[cursor.row] = "";
+	                    }
+	                    buffer.rows[cursor.row] = buffer.rows[cursor.row].splice(cursor.col, 0, constants.SPACE);
+	                    cursor.col++;
+	                    break;
+	                }
 	            case keycodes.ENTER:
 	                {
 	                    if (!buffer.rows[cursor.row]) {
@@ -237,6 +244,8 @@ var Remington =
 	                }
 	        }
 	        if (validKey && inputCallback && typeof inputCallback === 'function') {
+	            event.preventDefault();
+	            event.stopPropagation();
 	            inputCallback(event);
 	        }
 	    });
@@ -263,7 +272,8 @@ var Remington =
 	    "BACKSPACE": 8,
 	    "TAB": 9,
 	    "CTRL": 17,
-	    "ALT": 18
+	    "ALT": 18,
+	    "SPACE": 32
 	};
 
 /***/ },
@@ -273,7 +283,8 @@ var Remington =
 	"use strict";
 
 	module.exports = {
-	    "NEWLINE": '\n'
+	    "NEWLINE": '\n',
+	    "SPACE": ' '
 	};
 
 /***/ }
