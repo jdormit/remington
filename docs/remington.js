@@ -162,8 +162,7 @@ var Remington =
 
 	        if (col < 0) {
 	            col = 0;
-	        }
-	        if (col > buffer.rows[row].length - 1) {
+	        } else if (col > buffer.rows[row].length - 1) {
 	            col = buffer.rows[row].length - 1;
 	        }
 
