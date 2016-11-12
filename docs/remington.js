@@ -140,11 +140,33 @@ var Remington =
 	        col: 0
 	    };
 
+	    /**
+	     * Gets the cursor position
+	     */
 	    self.getCursor = function () {
 	        return cursor;
 	    };
 
+	    /**
+	     * Set the cursor position
+	     * If the new position is out of bounds, it will be set to the nearest valid position
+	     * @property {Number} col - The column to set the cursor to
+	     * @property {Number} row - The row to set the cursor to
+	     */
 	    self.setCursor = function (col, row) {
+	        if (row < 0) {
+	            row = 0;
+	        } else if (row > buffer.rows.length - 1) {
+	            row = buffer.rows.length - 1;
+	        }
+
+	        if (col < 0) {
+	            col = 0;
+	        }
+	        if (col > buffer.rows[row].length - 1) {
+	            col = buffer.rows[row].length - 1;
+	        }
+
 	        cursor.col = col;
 	        cursor.row = row;
 	    };
