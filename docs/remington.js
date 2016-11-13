@@ -66,7 +66,8 @@ var Remington =
 	/**
 	 * The Remington constructor
 	 * @constructor
-	 * @param {Element} element - The DOM element to which to attach this Remington instance
+	 * @param {Element} [element] - The DOM element to which to attach this Remington instance. If undefined, no event listeners will be registered
+	 * and the buffer can only be mutated using the Remington instance methods
 	 * @param {String|String[]} [initialText = ""] - Text to put in the buffer initially, as a string or an array of lines of text
 	 * @param {Function} [inputCallback] - A callback that fires whenever the Remington instance detects input. Takes a single parameter, the event that was fired
 	 */
@@ -195,30 +196,28 @@ var Remington =
 	    Object.defineProperty(String.prototype, 'splice', { value: spliceString });
 
 	    /**
-	     * The keypress event listener handles inserting regular characters
+	     * Sends a single character to the buffer and updates the cursor accordingly
+	     * @private
+	     * @param {String} character - the character to send to the buffer
+	     * @returns true to maintain compatibility with sendInput()
 	     */
-	    element.addEventListener('keypress', function (event) {
-	        // catch any keypress events that should be handled as non-character keys
-	        if (Object.values(keycodes).indexOf(event.keyCode) >= 0) {
-	            return;
-	        }
-	        var character = String.fromCharCode(event.charCode);
+	    var handleCharacterInput = function handleCharacterInput(character) {
 	        if (!buffer.rows[cursor.row]) {
 	            buffer.rows[cursor.row] = "";
 	        }
 	        buffer.rows[cursor.row] = buffer.rows[cursor.row].splice(cursor.col, 0, character);
 	        cursor.col++;
-	        if (inputCallback && typeof inputCallback === 'function') {
-	            inputCallback(event);
-	        }
-	    });
+	        return true;
+	    };
 
 	    /**
-	     * The keydown event listener handles non-character keys such as ENTER
+	     * Sends a non-character input (backspace, enter) to the buffer
+	     * @param {Number} keycode - the keycode of the key to send
+	     * @returns true if keycode is a valid key (one the Remington knows how to handle), false otherwise
 	     */
-	    element.addEventListener('keydown', function (event) {
+	    var handleNonCharacterInput = function handleNonCharacterInput(keycode) {
 	        var validKey = true;
-	        switch (event.keyCode) {
+	        switch (keycode) {
 	            case keycodes.SPACE:
 	                {
 	                    if (!buffer.rows[cursor.row]) {
@@ -265,12 +264,63 @@ var Remington =
 	                    break;
 	                }
 	        }
-	        if (validKey && inputCallback && typeof inputCallback === 'function') {
-	            event.preventDefault();
-	            event.stopPropagation();
-	            inputCallback(event);
+	        return validKey;
+	    };
+
+	    /**
+	     * Sends input to the buffer
+	     * @param {String|Number} input - a keycode or character value to send to the buffer
+	     * @returns true if the Remington instance knew how to handle the input, false if otherwise
+	     */
+	    self.sendInput = function (input) {
+	        if (typeof input === "string") {
+	            if (input.length != 1) {
+	                throw new Error("Input must be processed one character at a time");
+	            }
+	            return handleCharacterInput(input);
+	        } else if (typeof input === "number") {
+	            // If the input is a keycode that Remington knows about, handle it
+	            if (Object.values(keycodes).indexOf(input) >= 0) {
+	                return handleNonCharacterInput(input);
+	            }
+	            // Otherwise, assume the input is a charCode representing a character
+	            else {
+	                    var character = String.fromCharCode(input);
+	                    return handleCharacterInput(character);
+	                }
 	        }
-	    });
+	    };
+
+	    // Only register event listeners if an element is defined
+	    if (element) {
+
+	        /**
+	         * The keypress event listener handles inserting regular characters
+	         */
+	        element.addEventListener('keypress', function (event) {
+	            // Catch any keypress events that should be handled as non-character keys
+	            if (Object.values(keycodes).indexOf(event.keyCode) >= 0) {
+	                return;
+	            }
+	            var character = String.fromCharCode(event.charCode);
+	            handleCharacterInput(character);
+	            if (inputCallback && typeof inputCallback === 'function') {
+	                inputCallback(event);
+	            }
+	        });
+
+	        /**
+	         * The keydown event listener handles non-character keys such as ENTER
+	         */
+	        element.addEventListener('keydown', function (event) {
+	            var validKey = handleNonCharacterInput(event.keyCode);
+	            if (validKey && inputCallback && typeof inputCallback === 'function') {
+	                event.preventDefault();
+	                event.stopPropagation();
+	                inputCallback(event);
+	            }
+	        });
+	    }
 
 	    if (initialText !== "") {
 	        self.setBufferText(initialText);
