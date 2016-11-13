@@ -31,7 +31,7 @@ var writer = new Remington(myElement);
 ```
 
 #### Arguments
-`element {Element}`: The DOM element to which to attach this Remington instance.
+`element {Element}`: The DOM element to which to attach this Remington instance. This can be `null` or `undefined`; if it is, then no event listeners will be registered. In that case, the only to modify the buffer is through the Remington instance methods.
 
 `initialText {String}`: Optional. This text will start in the Remington instance's buffer.
 
@@ -52,6 +52,15 @@ Sets this instance's buffer text to `text`. The text is broken into rows based o
 
 ##### Arguments
 `text {String}`: The text to set the buffer to.
+
+#### `writer.sendInput(input)`
+Sends input, either a single character or a keycode, to the Remington instance.
+
+##### Arguments
+`input {String|Number}`: If a string, then this must be a single character to send to the Remington buffer. If a number, this must be a valid keycode the Remington knows how to handle.
+
+##### Return Value
+`true` if the Remington instance properly handled the input; `false` if otherwise.
 
 #### `writer.getCursor()`
 This returns the `Object` representing this instance's cursor.
