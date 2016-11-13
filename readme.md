@@ -20,7 +20,6 @@ var myElement = document.getElementById('myElement');
 var writer = new Remington(myElement);
 
 // Now KeyboardEvents emitted by myElement will be caught and processed by Remington
-});
 ```
 ## The Remington Instance
 ### `Remington(element, initialText, inputCallback)`
