@@ -30,7 +30,7 @@ var writer = new Remington(myElement);
 ```
 
 #### Arguments
-`element {Element}`: The DOM element to which to attach this Remington instance. This can be `null` or `undefined`; if it is, then no event listeners will be registered. In that case, the only to modify the buffer is through the Remington instance methods.
+`element {Element}`: The DOM element to which to attach this Remington instance. This can be `null` or `undefined`; if it is, then no event listeners will be registered. In that case, the only way to modify the buffer is through the Remington instance methods.
 
 `initialText {String}`: Optional. This text will start in the Remington instance's buffer.
 
