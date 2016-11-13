@@ -56,7 +56,7 @@ Sets this instance's buffer text to `text`. The text is broken into rows based o
 Sends input, either a single character or a keycode, to the Remington instance.
 
 ##### Arguments
-`input {String|Number}`: If a string, then this must be a single character to send to the Remington buffer. If a number, this must be a valid keycode the Remington knows how to handle.
+`input {String|Number}`: If a string, then this must be a single character to send to the Remington buffer. If a number, this must be a valid keycode that Remington knows how to handle.
 
 ##### Return Value
 `true` if the Remington instance properly handled the input; `false` if otherwise.
