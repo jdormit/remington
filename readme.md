@@ -36,6 +36,8 @@ var writer = new Remington(myElement);
 
 `inputCallback {Function}`: Optional. The function is called whenever the Remington instance detects input. It is called once per character inputted.
 
+The input callback takes one argument, `inputEvent`. The `inputEvent` is the KeyboardEvent object representing the input. `inputEvent` also includes two additional properties: `oldCursor` and `cursor`. `oldCursor` is the cursor object before the input was processed; `cursor` is the cursor after the input was processed.
+
 #### Returns
 A new `Remington` instance.
 
