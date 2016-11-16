@@ -1304,7 +1304,9 @@ var Remington =
 	    };
 
 	    // Add splice as a non-enumerable read-only property of String.prototype
-	    Object.defineProperty(String.prototype, 'splice', { value: spliceString });
+	    if (!String.prototype.splice) {
+	        Object.defineProperty(String.prototype, 'splice', { value: spliceString });
+	    }
 
 	    /**
 	     * Sends a single character to the buffer and updates the cursor accordingly
@@ -1414,7 +1416,9 @@ var Remington =
 	                return;
 	            }
 	            var character = String.fromCharCode(event.charCode);
+	            event.oldCursor = Object.assign({}, cursor);
 	            handleCharacterInput(character);
+	            event.cursor = Object.assign({}, cursor);
 	            if (inputCallback && typeof inputCallback === 'function') {
 	                inputCallback(event);
 	            }
@@ -1424,7 +1428,9 @@ var Remington =
 	         * The keydown event listener handles non-character keys such as ENTER
 	         */
 	        element.addEventListener('keydown', function (event) {
+	            event.oldCursor = Object.assign({}, cursor);
 	            var validKey = handleNonCharacterInput(event.keyCode);
+	            event.cursor = Object.assign({}, cursor);
 	            if (validKey && inputCallback && typeof inputCallback === 'function') {
 	                event.preventDefault();
 	                event.stopPropagation();
